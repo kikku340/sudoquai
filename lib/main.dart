@@ -1,6 +1,7 @@
 //import 'dart:html';
-
+import './config/size_config.dart';
 import 'package:flutter/material.dart';
+import './gamearea.dart';
 
 void main() => runApp(
       MaterialApp(
@@ -21,31 +22,15 @@ class _State extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text('GridView demo'),
       ),
       body: Container(
-        child: _gamearea(),
+        child: gamearea(),
       ),
-    );
-  }
-
-  Widget _gamearea() {
-    int sum;
-    return Container(
-      child: Row(children: <Widget>[
-        for (int i = 1; i < 10; i++) ...{
-          Expanded(
-            child: Column(children: [
-              for (int j = 1; j < 10; j++) ...{
-                Text((i * j).toString()),
-              }
-            ]),
-          )
-        }
-      ]),
     );
   }
 
