@@ -2,21 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:sprintf/sprintf.dart';
 import './config/size_config.dart';
 
-Widget gamearea() {
-  int sum;
-  return Scaffold(
-      body: Center(
-    child: Column(mainAxisSize: MainAxisSize.min, children: [
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          "aaa",
-          style: TextStyle(fontSize: 40),
+class Gamearea extends StatefulWidget {
+  Gamearea({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+  @override
+  _gameareastate createState() => _gameareastate();
+}
+
+class _gameareastate extends State<Gamearea> {
+  @override
+  Widget build(Object context) {
+    return Scaffold(
+        body: Center(
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            "aaa",
+            style: TextStyle(fontSize: 40),
+          ),
         ),
-      ),
-      sudokucontainer(),
-    ]),
-  ));
+        sudokucontainer(),
+      ]),
+    ));
+  }
 }
 
 Widget sudokucontainer() {
