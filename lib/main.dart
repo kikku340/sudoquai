@@ -1,9 +1,6 @@
 //import 'dart:html';
-import 'package:sprintf/sprintf.dart';
-
 import './config/size_config.dart';
 import 'package:flutter/material.dart';
-import './gamearea.dart';
 
 void main() => runApp(
       MaterialApp(
@@ -21,6 +18,8 @@ class MyApp extends StatefulWidget {
 
 class _State extends State<MyApp> {
   var _scaffoldKey = new GlobalKey<ScaffoldState>();
+  int _selectedrow = 1;
+  int _selectedcolumn = 1;
 
   List<List<Color>> currentcolors =
       List.generate(9, (_) => List.generate(9, (_) => Colors.white));
@@ -37,9 +36,23 @@ class _State extends State<MyApp> {
   }
 
   void updatearea(int row, int column) {
+    _selectedcolumn = column;
+    _selectedrow = row;
     setState(() {
       initializecolors();
-      currentcolors[row][column] = Colors.blue;
+      currentcolors[_selectedrow][_selectedcolumn] =
+          Color.fromARGB(255, 188, 225, 255);
+    });
+  }
+
+  void updatenumber(int num) {
+    String inputstring;
+    if (num == 99)
+      inputstring = "";
+    else
+      inputstring = num.toString();
+    setState(() {
+      currentnumbers[_selectedrow][_selectedcolumn] = inputstring;
     });
   }
 
@@ -63,9 +76,59 @@ class _State extends State<MyApp> {
             ),
           ),
           sudokucontainer(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: numbercontainer(),
+          ),
+          MaterialButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+              side: BorderSide(color: Colors.blueGrey),
+            ),
+            color: Colors.blue,
+            child: Text(
+              "Clear",
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () => updatenumber(99),
+          )
         ]),
       ))),
     );
+  }
+
+  Widget numbercontainer() {
+    double side = SizeConfig.blockSizeHorizontal! * 90;
+    return Container(
+        width: side,
+        child: Table(
+            border: TableBorder.all(color: Colors.white),
+            columnWidths: const <int, TableColumnWidth>{
+              0: FlexColumnWidth(1.0),
+              1: FlexColumnWidth(1.0),
+              2: FlexColumnWidth(1.0),
+            },
+            defaultVerticalAlignment: TableCellVerticalAlignment.top,
+            children: [
+              for (int i = 0; i < 7; i += 3) ...{
+                TableRow(children: [
+                  for (int j = 1; j < 4; j++) ...{
+                    MaterialButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5), //角の丸み
+                        side: BorderSide(color: Colors.blueGrey), //枠//枠線の設定
+                      ),
+                      color: Colors.blue,
+                      child: Text(
+                        (i + j).toString(),
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      onPressed: () => updatenumber(i + j),
+                    ),
+                  }
+                ])
+              }
+            ]));
   }
 
   Widget sudokucontainer() {
@@ -83,11 +146,11 @@ class _State extends State<MyApp> {
                 width: side / 3,
                 height: side / 3,
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.green),
+                  border: Border.all(color: Colors.black),
                   //borderRadius: BorderRadius.circular(10),
                 ),
                 child: Table(
-                    border: TableBorder.all(color: Colors.white),
+                    border: TableBorder.all(color: Colors.black),
                     columnWidths: const <int, TableColumnWidth>{
                       0: FlexColumnWidth(1.0),
                       1: FlexColumnWidth(1.0),
@@ -106,8 +169,12 @@ class _State extends State<MyApp> {
                                 color: currentcolors[3 * row + j]
                                     [3 * column + i],
                                 child: TextButton(
-                                  child: Text(sprintf(
-                                      "%i,%i", [3 * row + j, 3 * column + i])),
+                                  child: Text(currentnumbers[3 * row + j]
+                                      [3 * column + i]),
+                                  style: ButtonStyle(
+                                      foregroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.black)),
                                   onPressed: () =>
                                       updatearea(3 * row + j, 3 * column + i),
                                 ),
