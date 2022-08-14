@@ -1,5 +1,6 @@
 //import 'dart:html';
 import 'package:sprintf/sprintf.dart';
+import 'package:sudoquai/completewindow.dart';
 import 'package:sudoquai/sudoku.dart';
 
 import './config/size_config.dart';
@@ -74,7 +75,11 @@ class _State extends State<MyApp> {
     sudoku.currentnumbers[_selectedcolumn][_selectedrow] = num;
     if (sudoku.check_complete(_selectedcolumn, _selectedrow)) {
       //完成!
-
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              // （2） 実際に表示するページ(ウィジェット)を指定する
+              builder: (context) => CompletePage()));
     }
   }
 

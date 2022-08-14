@@ -12,7 +12,8 @@ class CompletePageState extends State<CompletePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(children: [
+        body: Center(
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
@@ -32,11 +33,9 @@ class CompletePageState extends State<CompletePage> {
             "もう一度あそぶ",
             style: TextStyle(color: Colors.white),
           ),
-          onPressed: () => _resetAll(),
+          onPressed: () => Navigator.pop(context),
         ),
       ]),
-    );
+    ));
   }
-
-  void _resetAll() {}
 }
