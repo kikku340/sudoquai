@@ -1,4 +1,7 @@
 //import 'dart:html';
+import 'package:sprintf/sprintf.dart';
+import 'package:sudoquai/sudoku.dart';
+
 import './config/size_config.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +30,21 @@ class _State extends State<MyApp> {
       List.generate(9, (_) => List.generate(9, (_) => ""));
 
   _State() {
+    initializeall();
+  }
+
+  void initializeall() {
     initializecolors();
+    sudoku.initial();
+    for (int i = 0; i < 9; i++) {
+      for (int j = 0; j < 9; j++) {
+        if (sudoku.currentnumbers[i][j] == -1) {
+          currentnumbers[i][j] = "";
+          continue;
+        }
+        currentnumbers[i][j] = sudoku.currentnumbers[i][j].toString();
+      }
+    }
   }
 
   void initializecolors() {
@@ -35,25 +52,37 @@ class _State extends State<MyApp> {
         List.generate(9, (_) => List.generate(9, (_) => Colors.white));
   }
 
-  void updatearea(int row, int column) {
+  void updatearea(int column, int row) {
     _selectedcolumn = column;
     _selectedrow = row;
     setState(() {
       initializecolors();
-      currentcolors[_selectedrow][_selectedcolumn] =
-          Color.fromARGB(255, 188, 225, 255);
+      currentcolors[_selectedcolumn][_selectedrow] =
+          const Color.fromARGB(255, 188, 225, 255);
     });
   }
 
   void updatenumber(int num) {
     String inputstring;
-    if (num == 99)
+    if (num == -1)
       inputstring = "";
     else
       inputstring = num.toString();
     setState(() {
-      currentnumbers[_selectedrow][_selectedcolumn] = inputstring;
+      currentnumbers[_selectedcolumn][_selectedrow] = inputstring;
     });
+    sudoku.currentnumbers[_selectedcolumn][_selectedrow] = num;
+    if (sudoku.check_complete(_selectedcolumn, _selectedrow)) {
+      //完成!
+
+    }
+  }
+
+  Color updatenumbercolor(int column, int row) {
+    if (sudoku.chechvalidinputnumber(column, row)) {
+      return Colors.red;
+    }
+    return Colors.black;
   }
 
   @override
@@ -62,7 +91,7 @@ class _State extends State<MyApp> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('GridView demo'),
+        title: Text('sudoquai'),
       ),
       body: Container(
           child: Scaffold(
@@ -90,13 +119,14 @@ class _State extends State<MyApp> {
               "Clear",
               style: TextStyle(color: Colors.white),
             ),
-            onPressed: () => updatenumber(99),
-          )
+            onPressed: () => updatenumber(-1),
+          ),
         ]),
       ))),
     );
   }
 
+  //数字入力用のウィジェット
   Widget numbercontainer() {
     double side = SizeConfig.blockSizeHorizontal! * 90;
     return Container(
@@ -131,6 +161,7 @@ class _State extends State<MyApp> {
             ]));
   }
 
+  //数独のマス目のウィジェット
   Widget sudokucontainer() {
     double side = SizeConfig.blockSizeHorizontal! * 90;
     return Container(
@@ -138,8 +169,8 @@ class _State extends State<MyApp> {
       width: side,
       height: side,
       child: Stack(children: [
-        for (int row = 0; row < 3; row++) ...{
-          for (int column = 0; column < 3; column++) ...{
+        for (int column = 0; column < 3; column++) ...{
+          for (int row = 0; row < 3; row++) ...{
             Align(
               alignment: Alignment(row - 1, column - 1),
               child: Container(
@@ -162,21 +193,27 @@ class _State extends State<MyApp> {
                         TableRow(children: [
                           for (int j = 0; j < 3; j++) ...{
                             Align(
-                              alignment: Alignment(i - 1, j - 1),
+                              alignment: Alignment(j - 1, i - 1),
                               child: Container(
                                 width: side / 9,
                                 height: side / 9,
-                                color: currentcolors[3 * row + j]
-                                    [3 * column + i],
+                                color: currentcolors[3 * column + i]
+                                    [3 * row + j],
                                 child: TextButton(
-                                  child: Text(currentnumbers[3 * row + j]
-                                      [3 * column + i]),
+                                  child: Text(
+                                      currentnumbers[3 * column + i]
+                                          [3 * row + j],
+                                      style: TextStyle(
+                                          color: updatenumbercolor(
+                                              3 * column + i, 3 * row + j))),
+                                  // child: Text(sprintf(
+                                  //     "%i,%i", [3 * column + i, 3 * row + j])),
                                   style: ButtonStyle(
                                       foregroundColor:
                                           MaterialStateProperty.all<Color>(
                                               Colors.black)),
                                   onPressed: () =>
-                                      updatearea(3 * row + j, 3 * column + i),
+                                      updatearea(3 * column + i, 3 * row + j),
                                 ),
                               ),
                             )
