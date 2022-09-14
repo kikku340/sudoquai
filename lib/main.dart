@@ -1,4 +1,5 @@
 //import 'dart:html';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:sudoquai/completewindow.dart';
 import 'package:sudoquai/sudoku.dart';
@@ -6,12 +7,12 @@ import 'package:sudoquai/sudoku.dart';
 import './config/size_config.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(
-      MaterialApp(
+void main() => runApp(ProviderScope(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: MyApp(),
       ),
-    );
+    ));
 
 class MyApp extends StatefulWidget {
   @override
@@ -105,7 +106,7 @@ class _State extends State<MyApp> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "sudoku insanity",
+              "すうどく",
               style: TextStyle(fontSize: 40),
             ),
           ),
@@ -169,22 +170,26 @@ class _State extends State<MyApp> {
   //数独のマス目のウィジェット
   Widget sudokucontainer() {
     double side = SizeConfig.blockSizeHorizontal! * 90;
+    double blockside = SizeConfig.blockSizeHorizontal! * 89;
+    double sidegap = (side - blockside) / SizeConfig.blockSizeHorizontal!;
     return Container(
-      color: Colors.blue.shade100,
+      color: Colors.black,
       width: side,
       height: side,
       child: Stack(children: [
         for (int column = 0; column < 3; column++) ...{
           for (int row = 0; row < 3; row++) ...{
             Align(
-              alignment: Alignment(row - 1, column - 1),
+              alignment: Alignment(
+                  row - 1 + (row - 1) * (-2 * sidegap / 100 / 1.5),
+                  column - 1 + (column - 1) * (-2 * sidegap / 100 / 1.5)),
               child: Container(
-                width: side / 3,
-                height: side / 3,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  //borderRadius: BorderRadius.circular(10),
-                ),
+                width: blockside / 3,
+                height: blockside / 3,
+                // decoration: BoxDecoration(
+                //   border: Border.all(color: Colors.black),
+                //   //borderRadius: BorderRadius.circular(10),
+                // ),
                 child: Table(
                     border: TableBorder.all(color: Colors.black),
                     columnWidths: const <int, TableColumnWidth>{
@@ -200,8 +205,8 @@ class _State extends State<MyApp> {
                             Align(
                               alignment: Alignment(j - 1, i - 1),
                               child: Container(
-                                width: side / 9,
-                                height: side / 9,
+                                width: blockside / 9,
+                                height: blockside / 9,
                                 color: currentcolors[3 * column + i]
                                     [3 * row + j],
                                 child: TextButton(

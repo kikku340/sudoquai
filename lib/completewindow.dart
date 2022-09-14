@@ -26,7 +26,7 @@ class CompletePageState extends State<CompletePage> {
         MaterialButton(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5), //角の丸み
-            side: BorderSide(color: Colors.blueGrey), //枠//枠線の設定
+            side: BorderSide(color: Colors.blueGrey), //枠線の設定
           ),
           color: Colors.blue,
           child: Text(
